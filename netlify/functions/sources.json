@@ -1,13 +1,62 @@
 {
-  "top-stories": {
-    "liberal": [
-      { "name": "Reuters Top News", "url": "https://feeds.reuters.com/reuters/topNews" }
-    ],
-    "libertarian": [
-      { "name": "Reason", "url": "https://reason.com/feed/" }
-    ],
-    "conservative": [
-      { "name": "Fox News", "url": "https://moxie.foxnews.com/google-publisher/latest.xml" }
-    ]
-  }
+  "topics": [
+    {
+      "topicKey": "top-stories",
+      "title": "Top Stories",
+      "category": "Top Stories",
+      "panels": {
+        "liberal": [
+          {
+            "id": "cnn",
+            "name": "CNN",
+            "rss": "http://rss.cnn.com/rss/edition.rss"
+          },
+          {
+            "id": "nbc",
+            "name": "NBC News",
+            "rss": "https://feeds.nbcnews.com/nbcnews/public/news"
+          },
+          {
+            "id": "guardian-us",
+            "name": "The Guardian (US)",
+            "rss": "https://www.theguardian.com/us/rss"
+          }
+        ],
+        "libertarian": [
+          {
+            "id": "reason",
+            "name": "Reason",
+            "rss": "https://reason.com/feed/"
+          },
+          {
+            "id": "the-hill",
+            "name": "The Hill",
+            "rss": "https://thehill.com/feed/"
+          },
+          {
+            "id": "wash-times",
+            "name": "The Washington Times",
+            "rss": "https://www.washingtontimes.com/rss/headlines/news/"
+          }
+        ],
+        "conservative": [
+          {
+            "id": "fox",
+            "name": "Fox News",
+            "rss": "https://moxie.foxnews.com/google-publisher/latest.xml"
+          },
+          {
+            "id": "nypost",
+            "name": "New York Post",
+            "rss": "https://nypost.com/feed/"
+          },
+          {
+            "id": "wash-examiner",
+            "name": "Washington Examiner",
+            "rss": "https://www.washingtonexaminer.com/feed"
+          }
+        ]
+      }
+    }
+  ]
 }
