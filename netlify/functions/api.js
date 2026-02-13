@@ -40,7 +40,14 @@ exports.handler = async (event) => {
     return jsonResponse(200, { status: "ok" });
   }
 
-  if (routePath === "/v1/home" || routePath === "/v1/home/") {
+  // ✅ FIX: support /api/v1/home AND /v1/home (with or without trailing slash)
+  const isHome =
+    routePath === "/api/v1/home" ||
+    routePath === "/api/v1/home/" ||
+    routePath === "/v1/home" ||
+    routePath === "/v1/home/";
+
+  if (isHome) {
     const nowIso = new Date().toISOString();
     const today = nowIso.slice(0, 10);
 
@@ -59,19 +66,37 @@ exports.handler = async (event) => {
             {
               viewpoint: "liberal",
               items: [
-                { id: "ts-l-1", title: "Sample Top Story (Liberal)", url: "https://example.com", source: { name: "CNN" }, publishedAt: today },
+                {
+                  id: "ts-l-1",
+                  title: "Sample Top Story (Liberal)",
+                  url: "https://example.com",
+                  source: { name: "CNN" },
+                  publishedAt: today,
+                },
               ],
             },
             {
               viewpoint: "libertarian",
               items: [
-                { id: "ts-lib-1", title: "Sample Top Story (Libertarian)", url: "https://example.com", source: { name: "Reason" }, publishedAt: today },
+                {
+                  id: "ts-lib-1",
+                  title: "Sample Top Story (Libertarian)",
+                  url: "https://example.com",
+                  source: { name: "Reason" },
+                  publishedAt: today,
+                },
               ],
             },
             {
               viewpoint: "conservative",
               items: [
-                { id: "ts-c-1", title: "Sample Top Story (Conservative)", url: "https://example.com", source: { name: "Fox News" }, publishedAt: today },
+                {
+                  id: "ts-c-1",
+                  title: "Sample Top Story (Conservative)",
+                  url: "https://example.com",
+                  source: { name: "Fox News" },
+                  publishedAt: today,
+                },
               ],
             },
           ],
@@ -85,19 +110,37 @@ exports.handler = async (event) => {
             {
               viewpoint: "liberal",
               items: [
-                { id: "p-l-1", title: "Sample Politics headline (Liberal)", url: "https://example.com", source: { name: "MSNBC" }, publishedAt: today },
+                {
+                  id: "p-l-1",
+                  title: "Sample Politics headline (Liberal)",
+                  url: "https://example.com",
+                  source: { name: "MSNBC" },
+                  publishedAt: today,
+                },
               ],
             },
             {
               viewpoint: "libertarian",
               items: [
-                { id: "p-lib-1", title: "Sample Politics headline (Libertarian)", url: "https://example.com", source: { name: "Cato Institute" }, publishedAt: today },
+                {
+                  id: "p-lib-1",
+                  title: "Sample Politics headline (Libertarian)",
+                  url: "https://example.com",
+                  source: { name: "Cato Institute" },
+                  publishedAt: today,
+                },
               ],
             },
             {
               viewpoint: "conservative",
               items: [
-                { id: "p-c-1", title: "Sample Politics headline (Conservative)", url: "https://example.com", source: { name: "The Daily Wire" }, publishedAt: today },
+                {
+                  id: "p-c-1",
+                  title: "Sample Politics headline (Conservative)",
+                  url: "https://example.com",
+                  source: { name: "The Daily Wire" },
+                  publishedAt: today,
+                },
               ],
             },
           ],
