@@ -28,6 +28,17 @@ function getRoutePath(event) {
   return p || "/";
 }
 
+// ✅ Generates exactly N items so your UI always has 10 links per panel
+function makeItems(prefix, sourceName, label, urlBase, today, count = 10) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `${prefix}-${i + 1}`,
+    title: `${label} #${i + 1}`,
+    url: `${urlBase}?id=${encodeURIComponent(prefix)}-${i + 1}`,
+    source: { name: sourceName },
+    publishedAt: today,
+  }));
+}
+
 exports.handler = async (event) => {
   const method = (event.httpMethod || "GET").toUpperCase();
   const routePath = getRoutePath(event);
@@ -40,7 +51,7 @@ exports.handler = async (event) => {
     return jsonResponse(200, { status: "ok" });
   }
 
-  // ✅ FIX: support /api/v1/home AND /v1/home (with or without trailing slash)
+  // ✅ support /api/v1/home AND /v1/home (with or without trailing slash)
   const isHome =
     routePath === "/api/v1/home" ||
     routePath === "/api/v1/home/" ||
@@ -65,39 +76,36 @@ exports.handler = async (event) => {
           panels: [
             {
               viewpoint: "liberal",
-              items: [
-                {
-                  id: "ts-l-1",
-                  title: "Sample Top Story (Liberal)",
-                  url: "https://example.com",
-                  source: { name: "CNN" },
-                  publishedAt: today,
-                },
-              ],
+              items: makeItems(
+                "ts-l",
+                "CNN",
+                "Sample Top Story (Liberal)",
+                "https://example.com",
+                today,
+                10
+              ),
             },
             {
               viewpoint: "libertarian",
-              items: [
-                {
-                  id: "ts-lib-1",
-                  title: "Sample Top Story (Libertarian)",
-                  url: "https://example.com",
-                  source: { name: "Reason" },
-                  publishedAt: today,
-                },
-              ],
+              items: makeItems(
+                "ts-lib",
+                "Reason",
+                "Sample Top Story (Libertarian)",
+                "https://example.com",
+                today,
+                10
+              ),
             },
             {
               viewpoint: "conservative",
-              items: [
-                {
-                  id: "ts-c-1",
-                  title: "Sample Top Story (Conservative)",
-                  url: "https://example.com",
-                  source: { name: "Fox News" },
-                  publishedAt: today,
-                },
-              ],
+              items: makeItems(
+                "ts-c",
+                "Fox News",
+                "Sample Top Story (Conservative)",
+                "https://example.com",
+                today,
+                10
+              ),
             },
           ],
         },
@@ -109,39 +117,36 @@ exports.handler = async (event) => {
           panels: [
             {
               viewpoint: "liberal",
-              items: [
-                {
-                  id: "p-l-1",
-                  title: "Sample Politics headline (Liberal)",
-                  url: "https://example.com",
-                  source: { name: "MSNBC" },
-                  publishedAt: today,
-                },
-              ],
+              items: makeItems(
+                "p-l",
+                "MSNBC",
+                "Sample Politics headline (Liberal)",
+                "https://example.com",
+                today,
+                10
+              ),
             },
             {
               viewpoint: "libertarian",
-              items: [
-                {
-                  id: "p-lib-1",
-                  title: "Sample Politics headline (Libertarian)",
-                  url: "https://example.com",
-                  source: { name: "Cato Institute" },
-                  publishedAt: today,
-                },
-              ],
+              items: makeItems(
+                "p-lib",
+                "Cato Institute",
+                "Sample Politics headline (Libertarian)",
+                "https://example.com",
+                today,
+                10
+              ),
             },
             {
               viewpoint: "conservative",
-              items: [
-                {
-                  id: "p-c-1",
-                  title: "Sample Politics headline (Conservative)",
-                  url: "https://example.com",
-                  source: { name: "The Daily Wire" },
-                  publishedAt: today,
-                },
-              ],
+              items: makeItems(
+                "p-c",
+                "The Daily Wire",
+                "Sample Politics headline (Conservative)",
+                "https://example.com",
+                today,
+                10
+              ),
             },
           ],
         },
