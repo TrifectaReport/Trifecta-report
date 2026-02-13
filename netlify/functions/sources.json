@@ -1,0 +1,13 @@
+{
+  "top-stories": {
+    "liberal": [
+      { "name": "Reuters Top News", "url": "https://feeds.reuters.com/reuters/topNews" }
+    ],
+    "libertarian": [
+      { "name": "Reason", "url": "https://reason.com/feed/" }
+    ],
+    "conservative": [
+      { "name": "Fox News", "url": "https://moxie.foxnews.com/google-publisher/latest.xml" }
+    ]
+  }
+}
