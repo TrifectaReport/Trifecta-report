@@ -1,0 +1,17 @@
+[build]
+  publish = "web"
+  functions = "netlify/functions"
+
+# Route /api/* to the serverless function named "api"
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# Optional: health check shortcut
+[[redirects]]
+  from = "/health"
+  to = "/.netlify/functions/api/health"
+  status = 200
+  force = true

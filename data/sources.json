@@ -1,0 +1,48 @@
+{
+  "topics": [
+    {
+      "category": "Top Stories",
+      "topicKey": "top-stories",
+      "panels": {
+        "liberal": [
+          {
+            "name": "Reuters Top News",
+            "rss": "https://feeds.reuters.com/reuters/topNews"
+          },
+          {
+            "name": "AP News",
+            "rss": "https://apnews.com/rss"
+          },
+          {
+            "name": "CNN",
+            "rss": "http://rss.cnn.com/rss/edition.rss"
+          }
+        ],
+        "libertarian": [
+          {
+            "name": "Reason",
+            "rss": "https://reason.com/feed/"
+          },
+          {
+            "name": "Cato Institute",
+            "rss": "https://www.cato.org/rss.xml"
+          }
+        ],
+        "conservative": [
+          {
+            "name": "Fox News",
+            "rss": "https://moxie.foxnews.com/google-publisher/latest.xml"
+          },
+          {
+            "name": "New York Post",
+            "rss": "https://nypost.com/feed/"
+          },
+          {
+            "name": "Washington Examiner",
+            "rss": "https://www.washingtonexaminer.com/feed"
+          }
+        ]
+      }
+    }
+  ]
+}

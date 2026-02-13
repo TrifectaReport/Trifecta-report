@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trifecta Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Three perspectives. One clearer picture. Collapsed-by-default link aggregator: 10 headlines per viewpoint per topic." />
+
+  <style>
+    :root {
+      --bg: #f6f7f8;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 2px 10px rgba(0,0,0,0.06);
+      --radius: 12px;
+
+      --conservative: #9b2c2c;
+      --libertarian: #7a6f2b;
+      --liberal: #1f4ea1;
+
+      --link: #0f766e;
+      --linkHover: #115e59;
+      --focus: #111827;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    a { color: var(--link); text-decoration: none; }
+    a:hover { color: var(--linkHover); text-decoration: underline; }
+    a:focus { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 8px; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 70px;
+    }
+
+    header {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .brandRow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .tagline {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .pillRow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #fff;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .pill strong { color: var(--text); }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--muted);
+      display: inline-block;
+    }
+
+    .legalBanner {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      margin: 10px 0 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin: 12px 0 22px;
+    }
+
+    @media (min-width: 760px) {
+      .toolbar { grid-template-columns: 1.4fr 1fr; align-items: center; }
+    }
+
+    .search {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+    }
+    .search input { border: 0; outline: none; width: 100%; font-size: 1rem; }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+
+    .select {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .select label { color: var(--muted); font-size: 0.9rem; }
+    .select select { border: 0; outline: none; font-size: 0.98rem; background: transparent; }
+
+    details.topic {
+      background: var(--card);
+      border-radius: var(--radius);
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    summary.topicSummary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      user-select: none;
+    }
+    summary.topicSummary::-webkit-details-marker { display: none; }
+
+    .topicLeft { display: grid; gap: 4px; }
+    .topicTitle { margin: 0; font-size: 1.2rem; letter-spacing: -0.01em; }
+
+    .topicMeta {
+      color: var(--muted);
+      font-size: 0.92rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #f9fafb;
+      color: var(--muted);
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .chev {
+      font-weight: 800;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #f9fafb;
+    }
+
+    details[open] summary .chev { background: #f3f4f6; }
+    .topicBody { padding: 0 16px 16px; }
+
+    .grid3 {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+      margin-top: 10px;
+    }
+    @media (min-width: 920px) {
+      .grid3 { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .panelHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .leanLabel {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.01em;
+    }
+
+    .leanDot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    .liberal .leanDot { background: var(--liberal); }
+    .libertarian .leanDot { background: var(--libertarian); }
+    .conservative .leanDot { background: var(--conservative); }
+
+    .liberal .leanLabel { color: var(--liberal); }
+    .libertarian .leanLabel { color: var(--libertarian); }
+    .conservative .leanLabel { color: var(--conservative); }
+
+    .panelNote { color: var(--muted); font-size: 0.88rem; margin: 0; }
+
+    ol.headlines { margin: 0; padding-left: 18px; display: grid; gap: 10px; }
+    .headlineItem { display: grid; gap: 4px; }
+    .headlineLink { font-weight: 700; line-height: 1.3; }
+    .sourceLine { color: var(--muted); font-size: 0.85rem; }
+
+    .rules {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      display: grid;
+      gap: 10px;
+    }
+
+    footer .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: center;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="brandRow">
+        <h1>Trifecta Report</h1>
+        <div class="pillRow">
+          <span class="pill"><span class="dot"></span><strong>Free:</strong> everyone</span>
+          <span class="pill"><span class="dot"></span><strong>Model A:</strong> link aggregator</span>
+          <span class="pill"><span class="dot"></span><strong>Locked:</strong> 10 headlines × 3 viewpoints (30 per topic)</span>
+        </div>
+      </div>
+
+      <p class="tagline">Three perspectives. One clearer picture. Topics are collapsed by default—expand to view links.</p>
+
+      <div class="legalBanner">
+        Trifecta Report is a <strong>link-first aggregator</strong>. We do <strong>not</strong> host full articles or publisher images.
+        We provide brief, original context and link you to the source. For removals, see the Takedown section below.
+      </div>
+
+      <div class="toolbar" role="region" aria-label="Search and filters">
+        <div class="search">
+          <span aria-hidden="true">🔎</span>
+          <label class="sr-only" for="q">Search headlines</label>
+          <input id="q" type="search" placeholder="Search headlines…" autocomplete="off" />
+        </div>
+
+        <div class="filters">
+          <div class="select">
+            <label for="category">Category</label>
+            <select id="category">
+              <option value="all">All</option>
+              <option>Top Stories</option>
+              <option>Politics</option>
+              <option>U.S. News</option>
+              <option>Economy</option>
+              <option>World News</option>
+              <option>Entertainment</option>
+            </select>
+          </div>
+
+          <div class="select">
+            <label for="sort">Sort</label>
+            <select id="sort">
+              <option value="topic">By Topic</option>
+              <option value="newest">Newest (placeholder)</option>
+              <option value="source">By Source (placeholder)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="topics">
+
+      <!-- TOP STORIES (headlines placeholders) -->
+      <details class="topic" data-category="Top Stories">
+        <summary class="topicSummary">
+          <div class="topicLeft">
+            <h2 class="topicTitle">Top Stories</h2>
+            <div class="topicMeta">
+              <span class="badge">Collapsed by default</span>
+              <span class="badge">30 links on expand (10×3)</span>
+              <span class="badge">Updated: Feb 11, 2026</span>
+            </div>
+          </div>
+          <span class="chev">Expand</span>
+        </summary>
+        <div class="topicBody">
+          <div class="grid3">
+            <section class="panel liberal" aria-label="Top Stories — Liberal">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Liberal</div></div>
+              <p class="panelNote">10 headlines. Link out only. Attribution included.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: CNN · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">Guardrails: no full text · no publisher images · prominent outbound links</div>
+            </section>
+
+            <section class="panel libertarian" aria-label="Top Stories — Libertarian">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Libertarian</div></div>
+              <p class="panelNote">10 headlines. Prefer RSS/API feeds.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: Reason · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">Tip: rewritten headline + minimal context is safest</div>
+            </section>
+
+            <section class="panel conservative" aria-label="Top Stories — Conservative">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Conservative</div></div>
+              <p class="panelNote">10 headlines. Link out prominently.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: Fox News · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">If requested, remove links quickly and document the request</div>
+            </section>
+          </div>
+        </div>
+      </details>
+
+      <!-- POLITICS (headlines placeholders) -->
+      <details class="topic" data-category="Politics">
+        <summary class="topicSummary">
+          <div class="topicLeft">
+            <h2 class="topicTitle">Politics</h2>
+            <div class="topicMeta">
+              <span class="badge">Collapsed by default</span>
+              <span class="badge">30 links on expand (10×3)</span>
+              <span class="badge">Updated: Feb 11, 2026</span>
+            </div>
+          </div>
+          <span class="chev">Expand</span>
+        </summary>
+        <div class="topicBody">
+          <div class="grid3">
+            <section class="panel liberal" aria-label="Politics — Liberal">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Liberal</div></div>
+              <p class="panelNote">10 headlines.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">Keep headlines rewritten; no lede copying</div>
+            </section>
+
+            <section class="panel libertarian" aria-label="Politics — Libertarian">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Libertarian</div></div>
+              <p class="panelNote">10 headlines.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">Prefer RSS/API; link out only</div>
+            </section>
+
+            <section class="panel conservative" aria-label="Politics — Conservative">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Conservative</div></div>
+              <p class="panelNote">10 headlines.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">Sensitive source: keep it link-first and brief</div>
+            </section>
+          </div>
+        </div>
+      </details>
+
+      <!-- U.S. NEWS (headlines placeholders) -->
+      <details class="topic" data-category="U.S. News">
+        <summary class="topicSummary">
+          <div class="topicLeft">
+            <h2 class="topicTitle">U.S. News</h2>
+            <div class="topicMeta">
+              <span class="badge">Collapsed by default</span>
+              <span class="badge">30 links on expand (10×3)</span>
+              <span class="badge">Updated: Feb 11, 2026</span>
+            </div>
+          </div>
+          <span class="chev">Expand</span>
+        </summary>
+        <div class="topicBody">
+          <div class="grid3">
+            <section class="panel liberal" aria-label="Politics — Liberal">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Liberal</div></div>
+              <p class="panelNote">10 headlines.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: MSNBC · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">Keep headlines rewritten; no lede copying</div>
+            </section>
+
+            <section class="panel libertarian" aria-label="Politics — Libertarian">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Libertarian</div></div>
+              <p class="panelNote">10 headlines.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: Cato Institute · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">Prefer RSS/API; link out only</div>
+            </section>
+
+            <section class="panel conservative" aria-label="Politics — Conservative">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Conservative</div></div>
+              <p class="panelNote">10 headlines.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 1]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 2]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 3]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 4]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 5]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 6]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 7]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 8]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 9]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://example.com" target="_blank" rel="noopener noreferrer">[Rewritten headline 10]</a><div class="sourceLine">Source: The Daily Wire · Feb 11, 2026</div></li>
+              </ol>
+              <div class="rules">Sensitive source: keep it link-first and brief</div>
+            </section>
+          </div>
+        </div>
+      </details>
+
+      <!-- ECONOMY (deduped: uses your 30 SOURCE list) -->
+      <details class="topic" data-category="Economy">
+        <summary class="topicSummary">
+          <div class="topicLeft">
+            <h2 class="topicTitle">Economy</h2>
+            <div class="topicMeta">
+              <span class="badge">Collapsed by default</span>
+              <span class="badge">30 sources on expand (10×3)</span>
+              <span class="badge">Updated: Feb 11, 2026</span>
+            </div>
+          </div>
+          <span class="chev">Expand</span>
+        </summary>
+
+        <div class="topicBody">
+          <div class="grid3">
+
+            <section class="panel liberal" aria-label="Economy — Liberal (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Liberal</div></div>
+              <p class="panelNote">Use up to 10 sources for Economy coverage.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://www.nytimes.com/section/business" target="_blank" rel="noopener noreferrer">The New York Times — Business</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.washingtonpost.com/business/" target="_blank" rel="noopener noreferrer">The Washington Post — Business</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.wsj.com/news/economy" target="_blank" rel="noopener noreferrer">The Wall Street Journal — Economy</a><div class="sourceLine">Source option (often center-right; strong reporting)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.reuters.com/business/" target="_blank" rel="noopener noreferrer">Reuters — Business</a><div class="sourceLine">Source option (wire)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://apnews.com/hub/business" target="_blank" rel="noopener noreferrer">Associated Press — Business</a><div class="sourceLine">Source option (wire)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.npr.org/sections/business/" target="_blank" rel="noopener noreferrer">NPR — Business</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.theguardian.com/us/business" target="_blank" rel="noopener noreferrer">The Guardian — Business (US)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.bloomberg.com/" target="_blank" rel="noopener noreferrer">Bloomberg</a><div class="sourceLine">Source option (subscription)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.cnbc.com/economy/" target="_blank" rel="noopener noreferrer">CNBC — Economy</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.ft.com/world/us" target="_blank" rel="noopener noreferrer">Financial Times — US</a><div class="sourceLine">Source option (subscription)</div></li>
+              </ol>
+              <div class="rules">For paywalled sources: rewritten headline + link-only is safest.</div>
+            </section>
+
+            <section class="panel libertarian" aria-label="Economy — Libertarian (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Libertarian</div></div>
+              <p class="panelNote">Market/civil-liberty framing sources for Economy.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://www.cato.org/" target="_blank" rel="noopener noreferrer">Cato Institute</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://reason.com/" target="_blank" rel="noopener noreferrer">Reason</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.libertarianism.org/" target="_blank" rel="noopener noreferrer">Libertarianism.org</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.econlib.org/" target="_blank" rel="noopener noreferrer">Econlib (Liberty Fund)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.aier.org/" target="_blank" rel="noopener noreferrer">AIER</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://mises.org/" target="_blank" rel="noopener noreferrer">Mises Institute</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://fee.org/" target="_blank" rel="noopener noreferrer">FEE</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://cei.org/" target="_blank" rel="noopener noreferrer">CEI</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://mercatus.org/" target="_blank" rel="noopener noreferrer">Mercatus Center</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.independent.org/" target="_blank" rel="noopener noreferrer">Independent Institute</a><div class="sourceLine">Source option</div></li>
+              </ol>
+            </section>
+
+            <section class="panel conservative" aria-label="Economy — Conservative (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Conservative</div></div>
+              <p class="panelNote">Business + policy sources commonly read by conservatives.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://www.foxbusiness.com/" target="_blank" rel="noopener noreferrer">Fox Business</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.nationalreview.com/" target="_blank" rel="noopener noreferrer">National Review</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.wsj.com/" target="_blank" rel="noopener noreferrer">The Wall Street Journal</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.washingtontimes.com/" target="_blank" rel="noopener noreferrer">The Washington Times</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.dailywire.com/" target="_blank" rel="noopener noreferrer">The Daily Wire</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.washingtonexaminer.com/" target="_blank" rel="noopener noreferrer">Washington Examiner</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.heritage.org/" target="_blank" rel="noopener noreferrer">The Heritage Foundation</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.aei.org/" target="_blank" rel="noopener noreferrer">American Enterprise Institute (AEI)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.theepochtimes.com/" target="_blank" rel="noopener noreferrer">The Epoch Times</a><div class="sourceLine">Source option (verify carefully)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.breitbart.com/" target="_blank" rel="noopener noreferrer">Breitbart</a><div class="sourceLine">Source option (verify carefully)</div></li>
+              </ol>
+              <div class="rules">For higher-risk sources, keep it strictly link-first.</div>
+            </section>
+
+          </div>
+        </div>
+      </details>
+
+      <!-- WORLD NEWS (deduped: uses your 30 SOURCE list) -->
+      <details class="topic" data-category="World News">
+        <summary class="topicSummary">
+          <div class="topicLeft">
+            <h2 class="topicTitle">World News</h2>
+            <div class="topicMeta">
+              <span class="badge">Collapsed by default</span>
+              <span class="badge">30 sources on expand (10×3)</span>
+              <span class="badge">Updated: Feb 11, 2026</span>
+            </div>
+          </div>
+          <span class="chev">Expand</span>
+        </summary>
+
+        <div class="topicBody">
+          <div class="grid3">
+
+            <section class="panel liberal" aria-label="World News — Liberal (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Liberal</div></div>
+              <p class="panelNote">10 sources for international coverage.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://www.washingtonpost.com/world/" target="_blank" rel="noopener noreferrer">The Washington Post — World</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.nytimes.com/section/world" target="_blank" rel="noopener noreferrer">The New York Times — World</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.bbc.com/news" target="_blank" rel="noopener noreferrer">BBC News</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.reuters.com/world/" target="_blank" rel="noopener noreferrer">Reuters — World</a><div class="sourceLine">Source option (wire)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://apnews.com/hub/world-news" target="_blank" rel="noopener noreferrer">Associated Press — World</a><div class="sourceLine">Source option (wire)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.theguardian.com/world" target="_blank" rel="noopener noreferrer">The Guardian — World</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.aljazeera.com/" target="_blank" rel="noopener noreferrer">Al Jazeera</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.france24.com/en/" target="_blank" rel="noopener noreferrer">France 24 (English)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.dw.com/en/top-stories/s-9097" target="_blank" rel="noopener noreferrer">DW (Deutsche Welle) — Top Stories</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.npr.org/sections/world/" target="_blank" rel="noopener noreferrer">NPR — World</a><div class="sourceLine">Source option</div></li>
+              </ol>
+              <div class="rules">Wire services (AP/Reuters) are great for straight reporting + attribution.</div>
+            </section>
+
+            <section class="panel libertarian" aria-label="World News — Libertarian (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Libertarian</div></div>
+              <p class="panelNote">Foreign policy + civil liberties angles.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://reason.com/" target="_blank" rel="noopener noreferrer">Reason</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.cato.org/" target="_blank" rel="noopener noreferrer">Cato Institute</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.libertarianism.org/" target="_blank" rel="noopener noreferrer">Libertarianism.org</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.theamericanconservative.com/" target="_blank" rel="noopener noreferrer">The American Conservative</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.hrw.org/" target="_blank" rel="noopener noreferrer">Human Rights Watch</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.amnesty.org/en/" target="_blank" rel="noopener noreferrer">Amnesty International</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.foreignaffairs.com/" target="_blank" rel="noopener noreferrer">Foreign Affairs</a><div class="sourceLine">Source option (subscription)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.foreignpolicy.com/" target="_blank" rel="noopener noreferrer">Foreign Policy</a><div class="sourceLine">Source option (subscription)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.lawfaremedia.org/" target="_blank" rel="noopener noreferrer">Lawfare</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.cfr.org/" target="_blank" rel="noopener noreferrer">Council on Foreign Relations (CFR)</a><div class="sourceLine">Source option</div></li>
+              </ol>
+            </section>
+
+            <section class="panel conservative" aria-label="World News — Conservative (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Conservative</div></div>
+              <p class="panelNote">Commonly read conservative sources with world coverage.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://www.washingtontimes.com/" target="_blank" rel="noopener noreferrer">The Washington Times</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://nypost.com/" target="_blank" rel="noopener noreferrer">New York Post</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.foxnews.com/world" target="_blank" rel="noopener noreferrer">Fox News — World</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.nationalreview.com/" target="_blank" rel="noopener noreferrer">National Review</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.commentary.org/" target="_blank" rel="noopener noreferrer">Commentary Magazine</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.fdd.org/" target="_blank" rel="noopener noreferrer">Foundation for Defense of Democracies (FDD)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.hudson.org/" target="_blank" rel="noopener noreferrer">Hudson Institute</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.aei.org/" target="_blank" rel="noopener noreferrer">American Enterprise Institute (AEI)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.dailywire.com/" target="_blank" rel="noopener noreferrer">The Daily Wire</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.breitbart.com/" target="_blank" rel="noopener noreferrer">Breitbart</a><div class="sourceLine">Source option (verify carefully)</div></li>
+              </ol>
+              <div class="rules">For higher-risk sources, keep it strictly link-only + rewritten headline.</div>
+            </section>
+
+          </div>
+        </div>
+      </details>
+
+      <!-- ENTERTAINMENT (deduped: uses your 30 SOURCE list) -->
+      <details class="topic" data-category="Entertainment">
+        <summary class="topicSummary">
+          <div class="topicLeft">
+            <h2 class="topicTitle">Entertainment</h2>
+            <div class="topicMeta">
+              <span class="badge">Collapsed by default</span>
+              <span class="badge">30 sources on expand (10×3)</span>
+              <span class="badge">Updated: Feb 11, 2026</span>
+            </div>
+          </div>
+          <span class="chev">Expand</span>
+        </summary>
+
+        <div class="topicBody">
+          <div class="grid3">
+
+            <section class="panel liberal" aria-label="Entertainment — Liberal (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Liberal</div></div>
+              <p class="panelNote">Entertainment/trade + mainstream culture sources.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://variety.com/" target="_blank" rel="noopener noreferrer">Variety</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.hollywoodreporter.com/" target="_blank" rel="noopener noreferrer">The Hollywood Reporter</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://deadline.com/" target="_blank" rel="noopener noreferrer">Deadline</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.rollingstone.com/" target="_blank" rel="noopener noreferrer">Rolling Stone</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.billboard.com/" target="_blank" rel="noopener noreferrer">Billboard</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://pitchfork.com/" target="_blank" rel="noopener noreferrer">Pitchfork</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.vulture.com/" target="_blank" rel="noopener noreferrer">Vulture</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.eonline.com/" target="_blank" rel="noopener noreferrer">E! Online</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://people.com/" target="_blank" rel="noopener noreferrer">People</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.tmz.com/" target="_blank" rel="noopener noreferrer">TMZ</a><div class="sourceLine">Source option (tabloid; verify)</div></li>
+              </ol>
+              <div class="rules">Entertainment sites are image-heavy—do not copy or rehost their images.</div>
+            </section>
+
+            <section class="panel libertarian" aria-label="Entertainment — Libertarian (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Libertarian</div></div>
+              <p class="panelNote">Culture commentary with a free-speech / skepticism angle.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://reason.com/" target="_blank" rel="noopener noreferrer">Reason (Culture)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.cato.org/" target="_blank" rel="noopener noreferrer">Cato Institute (speech/culture policy)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.libertarianism.org/" target="_blank" rel="noopener noreferrer">Libertarianism.org (culture/history)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.thefire.org/" target="_blank" rel="noopener noreferrer">FIRE (Free Speech)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.aclu.org/" target="_blank" rel="noopener noreferrer">ACLU (speech-related cases)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.techdirt.com/" target="_blank" rel="noopener noreferrer">Techdirt</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.eff.org/" target="_blank" rel="noopener noreferrer">EFF</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.wired.com/" target="_blank" rel="noopener noreferrer">WIRED</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.theatlantic.com/culture/" target="_blank" rel="noopener noreferrer">The Atlantic — Culture</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.persuasion.community/" target="_blank" rel="noopener noreferrer">Persuasion</a><div class="sourceLine">Source option</div></li>
+              </ol>
+              <div class="rules">If you want “pure entertainment” here, swap in arts outlets—but keep link-only.</div>
+            </section>
+
+            <section class="panel conservative" aria-label="Entertainment — Conservative (Sources)">
+              <div class="panelHead"><div class="leanLabel"><span class="leanDot"></span> Conservative</div></div>
+              <p class="panelNote">Culture commentary sources commonly read by conservatives.</p>
+              <ol class="headlines">
+                <li class="headlineItem"><a class="headlineLink" href="https://www.dailywire.com/" target="_blank" rel="noopener noreferrer">The Daily Wire (Culture/Entertainment)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.foxnews.com/entertainment" target="_blank" rel="noopener noreferrer">Fox News — Entertainment</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://nypost.com/entertainment/" target="_blank" rel="noopener noreferrer">New York Post — Entertainment</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.nationalreview.com/" target="_blank" rel="noopener noreferrer">National Review (Culture)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.washingtontimes.com/" target="_blank" rel="noopener noreferrer">The Washington Times (Culture)</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.commentary.org/" target="_blank" rel="noopener noreferrer">Commentary Magazine</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.theblaze.com/" target="_blank" rel="noopener noreferrer">TheBlaze</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.breitbart.com/entertainment/" target="_blank" rel="noopener noreferrer">Breitbart — Entertainment</a><div class="sourceLine">Source option (verify)</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.dailysignal.com/" target="_blank" rel="noopener noreferrer">The Daily Signal</a><div class="sourceLine">Source option</div></li>
+                <li class="headlineItem"><a class="headlineLink" href="https://www.theepochtimes.com/" target="_blank" rel="noopener noreferrer">The Epoch Times</a><div class="sourceLine">Source option (verify)</div></li>
+              </ol>
+              <div class="rules">For sensitive/protective sources, stick to rewritten headline + link only.</div>
+            </section>
+
+          </div>
+        </div>
+      </details>
+
+    </main>
+
+    <footer id="takedown">
+      <strong>Copyright / Takedown (DMCA-style)</strong>
+      <div>
+        If you’re a rights holder and want something removed, contact us with:
+        (1) the URL on Trifecta Report, (2) the original source URL, and (3) proof of ownership/authority.
+        We’ll review and, when appropriate, remove the link or adjust the headline/summary.
+      </div>
+
+      <div class="links">
+        <a href="/terms.html">Terms</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/dmca.html">DMCA / Takedown</a>
+        <a href="/sources.html">Sources</a>
+      </div>
+
+      <div>© <span id="year"></span> Trifecta Report</div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <script src="home.js"></script>
+
+</body>
+</html>
